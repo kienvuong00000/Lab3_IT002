@@ -1,0 +1,162 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+const double PI = 3.141592653589793;
+
+class cDiem {
+private:
+    double x, y;
+
+public:
+    cDiem() : x(0), y(0) {}
+
+    void nhap() {
+        cin >> x >> y;
+    }
+
+    void xuat() const {
+        cout << "(" << x << ", " << y << ")";
+    }
+
+    void tinhTien(double dx, double dy) {
+        x += dx;
+        y += dy;
+    }
+
+    void quay(double goc) {
+        double rad = goc * PI / 180.0;
+        double xMoi = x * cos(rad) - y * sin(rad);
+        double yMoi = x * sin(rad) + y * cos(rad);
+        x = xMoi;
+        y = yMoi;
+    }
+
+    void phongTo(double k) {
+        x *= k;
+        y *= k;
+    }
+
+    double getX() const { return x; }
+    double getY() const { return y; }
+};
+
+class cDaGiac {
+private:
+    vector<cDiem> ds;
+
+    double doDai(const cDiem& A, const cDiem& B) const {
+        return sqrt(pow(A.getX() - B.getX(), 2) +
+                    pow(A.getY() - B.getY(), 2));
+    }
+
+public:
+    void nhap() {
+        int n;
+        cout << "Nhap so dinh: ";
+        cin >> n;
+
+        ds.resize(n);
+        for (int i = 0; i < n; i++) {
+            cout << "Nhap dinh " << i+1 << ": ";
+            ds[i].nhap();
+        }
+    }
+
+    void xuat() const {
+        cout << "Da giac: ";
+        for (const auto& p : ds) {
+            p.xuat();
+            cout << " ";
+        }
+        cout << endl;
+    }
+
+    bool hopLe() const {
+        return ds.size() >= 3;
+    }
+
+    double chuVi() const {
+        double cv = 0;
+        int n = ds.size();
+        for (int i = 0; i < n; i++) {
+            cv += doDai(ds[i], ds[(i+1)%n]);
+        }
+        return cv;
+    }
+
+    double dienTich() const {
+        double S = 0;
+        int n = ds.size();
+
+        for (int i = 0; i < n; i++) {
+            int j = (i + 1) % n;
+            S += ds[i].getX() * ds[j].getY();
+            S -= ds[j].getX() * ds[i].getY();
+        }
+
+        return fabs(S) / 2;
+    }
+
+    void tinhTien(double dx, double dy) {
+        for (auto& p : ds)
+            p.tinhTien(dx, dy);
+    }
+
+    void quay(double goc) {
+        for (auto& p : ds)
+            p.quay(goc);
+    }
+
+    void phongTo(double k) {
+        if (k <= 0) {
+            cout << "k khong hop le\n";
+            return;
+        }
+        for (auto& p : ds)
+            p.phongTo(k);
+    }
+};
+
+int main() {
+    cDaGiac dg;
+
+    cout << "NHAP DA GIAC:\n";
+    dg.nhap();
+
+    if (!dg.hopLe()) {
+        cout << "Khong phai da giac hop le\n";
+        return 0;
+    }
+
+    double dx, dy, goc, k;
+
+    cout << "\nNhap dx dy: ";
+    cin >> dx >> dy;
+
+    cout << "Nhap goc quay: ";
+    cin >> goc;
+
+    cout << "Nhap k: ";
+    cin >> k;
+
+    dg.xuat();
+    cout << "Chu vi: " << dg.chuVi() << endl;
+    cout << "Dien tich: " << dg.dienTich() << endl;
+
+    dg.tinhTien(dx, dy);
+    cout << "Tinh tien: ";
+    dg.xuat();
+
+    dg.quay(goc);
+    cout << "Quay: ";
+    dg.xuat();
+
+    dg.phongTo(k);
+    cout << (k > 1 ? "Phong to: " : "Thu nho: ");
+    dg.xuat();
+
+    return 0;
+}
