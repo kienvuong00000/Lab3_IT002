@@ -1,0 +1,131 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+class cArray {
+private:
+    vector<int> a;
+
+    bool laSoNguyenTo(int n) const {
+        if (n < 2) return false;
+        for (int i = 2; i * i <= n; i++)
+            if (n % i == 0) return false;
+        return true;
+    }
+
+public:
+    cArray() {}
+
+    void taoNgauNhien(int n) {
+        a.resize(n);
+        srand(time(0));
+        for (int i = 0; i < n; i++) {
+            a[i] = rand() % 100; // 0 -> 99
+        }
+    }
+
+    void xuat() const {
+        for (int x : a)
+            cout << x << " ";
+        cout << endl;
+    }
+
+    int demX(int x) const {
+        int dem = 0;
+        for (int v : a)
+            if (v == x) dem++;
+        return dem;
+    }
+
+    bool tangDan() const {
+        for (int i = 1; i < a.size(); i++)
+            if (a[i] < a[i - 1])
+                return false;
+        return true;
+    }
+
+    int leNhoNhat() const {
+        int minLe = -1;
+        for (int v : a) {
+            if (v % 2 != 0) {
+                if (minLe == -1 || v < minLe)
+                    minLe = v;
+            }
+        }
+        return minLe;
+    }
+
+    int nguyenToLonNhat() const {
+        int maxNT = -1;
+        for (int v : a) {
+            if (laSoNguyenTo(v)) {
+                if (v > maxNT)
+                    maxNT = v;
+            }
+        }
+        return maxNT;
+    }
+
+    void sapXepTang() {
+        int n = a.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (a[j] > a[j + 1])
+                    swap(a[j], a[j + 1]);
+    }
+89
+
+    void sapXepGiam() {
+        int n = a.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (a[j] < a[j + 1])
+                    swap(a[j], a[j + 1]);
+    }
+};
+
+int main() {
+    cArray arr;
+    int n, x;
+
+    cout << "Nhap so phan tu: ";
+    cin >> n;
+
+    arr.taoNgauNhien(n);
+
+    cout << "Mang: ";
+    arr.xuat();
+
+    cout << "\nNhap x: ";
+    cin >> x;
+
+    cout << "So lan xuat hien cua " << x << ": " << arr.demX(x) << endl;
+
+    cout << "Mang co tang dan khong? ";
+    cout << (arr.tangDan() ? "Co\n" : "Khong\n");
+
+    int le = arr.leNhoNhat();
+    if (le == -1)
+        cout << "Khong co so le\n";
+    else
+        cout << "So le nho nhat: " << le << endl;
+
+    int nt = arr.nguyenToLonNhat();
+    if (nt == -1)
+        cout << "Khong co so nguyen to\n";
+    else
+        cout << "So nguyen to lon nhat: " << nt << endl;
+
+    arr.sapXepTang();
+    cout << "Tang dan: ";
+    arr.xuat();
+
+    arr.sapXepGiam();
+    cout << "Giam dan: ";
+    arr.xuat();
+
+    return 0;
+}
