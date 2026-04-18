@@ -1,0 +1,185 @@
+#include <iostream>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+const double EPS = 1e-6;
+const double PI = 3.141592653589793;
+
+class cDiem {
+private:
+    double x, y;
+
+public:
+    cDiem() : x(0), y(0) {}
+    cDiem(double x, double y) : x(x), y(y) {}
+
+    void nhap() {
+        cin >> x >> y;
+    }
+
+    void xuat() const {
+        cout << "(" << x << ", " << y << ")";
+    }
+
+    void tinhTien(double dx, double dy) {
+        x += dx;
+        y += dy;
+    }
+
+    void quay(double goc) {
+        double rad = goc * PI / 180.0;
+        double xMoi = x * cos(rad) - y * sin(rad);
+        double yMoi = x * sin(rad) + y * cos(rad);
+        x = xMoi;
+        y = yMoi;
+    }
+
+    void phongTo(double k) {
+        x *= k;
+        y *= k;
+    }
+
+    double getX() const { return x; }
+    double getY() const { return y; }
+};
+
+class cTamGiac {
+private:
+    cDiem A, B, C;
+
+    double doDai(const cDiem& P, const cDiem& Q) const {
+        return sqrt(pow(P.getX() - Q.getX(), 2) +
+                    pow(P.getY() - Q.getY(), 2));
+    }
+
+public:
+    void nhap() {
+        cout << "Nhap A: "; A.nhap();
+        cout << "Nhap B: "; B.nhap();
+        cout << "Nhap C: "; C.nhap();
+    }
+
+    void xuat() const {
+        cout << "A"; A.xuat();
+        cout << " B"; B.xuat();
+        cout << " C"; C.xuat();
+        cout << endl;
+    }
+
+    bool laTamGiac() const {
+        double AB = doDai(A, B);
+        double BC = doDai(B, C);
+        double CA = doDai(C, A);
+
+        return (AB + BC - CA > EPS &&
+                AB + CA - BC > EPS &&
+                BC + CA - AB > EPS);
+    }
+
+    string loaiTamGiac() const {
+        double AB = doDai(A, B);
+        double BC = doDai(B, C);
+        double CA = doDai(C, A);
+
+        if (!laTamGiac()) return "Khong hop le";
+
+        bool can = (fabs(AB - BC) < EPS || fabs(BC - CA) < EPS || fabs(CA - AB) < EPS);
+        bool vuong = (fabs(AB*AB + BC*BC - CA*CA) < EPS ||
+                      fabs(AB*AB + CA*CA - BC*BC) < EPS ||
+                      fabs(BC*BC + CA*CA - AB*AB) < EPS);
+
+        if (fabs(AB - BC) < EPS && fabs(BC - CA) < EPS)
+            return "Tam giac deu";
+
+        if (can && vuong)
+            return "Tam giac vuong can";
+
+        if (can)
+            return "Tam giac can";
+
+        if (vuong)
+            return "Tam giac vuong";
+
+        return "Tam giac thuong";
+    }
+
+    double chuVi() const {
+        return doDai(A,B) + doDai(B,C) + doDai(C,A);
+    }
+
+    double dienTich() const {
+        if (!laTamGiac()) return 0;
+
+        double AB = doDai(A,B);
+        double BC = doDai(B,C);
+        double CA = doDai(C,A);
+
+        double p = chuVi() / 2;
+        return sqrt(p * (p - AB) * (p - BC) * (p - CA));
+    }
+
+    void tinhTien(double dx, double dy) {
+        A.tinhTien(dx, dy);
+        B.tinhTien(dx, dy);
+        C.tinhTien(dx, dy);
+    }
+
+    void quay(double goc) {
+        A.quay(goc);
+        B.quay(goc);
+        C.quay(goc);
+    }
+
+    void phongTo(double k) {
+        if (k <= 0) {
+            cout << "He so k khong hop le\n";
+            return;
+        }
+        A.phongTo(k);
+        B.phongTo(k);
+        C.phongTo(k);
+    }
+};
+
+int main() {
+    cTamGiac tg;
+
+    cout << "NHAP TAM GIAC (x y):\n";
+    tg.nhap();
+
+    if (!tg.laTamGiac()) {
+        cout << "KHONG PHAI TAM GIAC HOP LE\n";
+        return 0;
+    }
+
+    double dx, dy, goc, k;
+
+    cout << "\nNhap dx dy: ";
+    cin >> dx >> dy;
+
+    cout << "Nhap goc quay: ";
+    cin >> goc;
+
+    cout << "Nhap k: ";
+    cin >> k;
+
+    cout << "Loai: " << tg.loaiTamGiac() << endl;
+    cout << "Chu vi: " << tg.chuVi() << endl;
+    cout << "Dien tich: " << tg.dienTich() << endl;
+
+    tg.tinhTien(dx, dy);
+    cout << "Tinh tien: ";
+    tg.xuat();
+
+    tg.quay(goc);
+    cout << "Quay: ";
+    tg.xuat();
+
+    tg.phongTo(k);
+    cout << (k > 1 ? "Phong to: " : "Thu nho: ");
+    tg.xuat();
+
+    return 0;
+}
