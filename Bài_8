@@ -1,0 +1,113 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class cNhanVienSX {
+private:
+    string maNV, hoTen, ngaySinh;
+    int soSP;
+    double donGia;
+
+public:
+    cNhanVienSX() {
+        maNV = hoTen = ngaySinh = "";
+        soSP = 0;
+        donGia = 0;
+    }
+
+    void nhap() {
+        cin.ignore();
+        cout << "Ma NV: ";
+        getline(cin, maNV);
+        cout << "Ho ten: ";
+        getline(cin, hoTen);
+        cout << "Ngay sinh (dd/mm/yyyy): ";
+        getline(cin, ngaySinh);
+        cout << "So san pham: ";
+        cin >> soSP;
+        cout << "Don gia: ";
+        cin >> donGia;
+    }
+
+    void xuat() {
+        cout << maNV << " | " << hoTen << " | " << ngaySinh
+             << " | " << soSP << " | " << donGia
+             << " | Luong: " << tinhLuong() << endl;
+    }
+
+    double tinhLuong() {
+        return soSP * donGia;
+    }
+
+    string getNgaySinh() {
+        return ngaySinh;
+    }
+};
+
+string layNam(string ns) {
+    return ns.substr(6, 4);
+}
+
+int main() {
+    int n;
+    cout << "Nhap so nhan vien: ";
+    cin >> n;
+
+    vector<cNhanVienSX> ds(n);
+
+    for (int i = 0; i < n; i++) {
+        cout << "\nNhap nhan vien thu " << i + 1 << ":\n";
+        ds[i].nhap();
+    }
+
+    cout << "\nDanh sach nhan vien:\n";
+    for (auto nv : ds) {
+        nv.xuat();
+    }
+
+    double minLuong = ds[0].tinhLuong();
+    for (auto nv : ds) {
+        if (nv.tinhLuong() < minLuong)
+            minLuong = nv.tinhLuong();
+    }
+
+    cout << "\nNhan vien co luong thap nhat:\n";
+    for (auto nv : ds) {
+        if (nv.tinhLuong() == minLuong)
+            nv.xuat();
+    }
+
+    double tong = 0;
+    for (auto nv : ds) {
+        tong += nv.tinhLuong();
+    }
+    cout << "\nTong luong cong ty phai tra: " << tong << endl;
+
+    string namMax = layNam(ds[0].getNgaySinh());
+    for (auto nv : ds) {
+        if (layNam(nv.getNgaySinh()) < namMax)
+            namMax = layNam(nv.getNgaySinh());
+    }
+
+    cout << "\nNhan vien lon tuoi nhat:\n";
+    for (auto nv : ds) {
+        if (layNam(nv.getNgaySinh()) == namMax)
+            nv.xuat();
+    }
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (ds[i].tinhLuong() > ds[j].tinhLuong()) {
+                swap(ds[i], ds[j]);
+            }
+        }
+    }
+
+    cout << "\nDanh sach sau khi sap xep tang dan theo luong:\n";
+    for (auto nv : ds) {
+        nv.xuat();
+    }
+
+    return 0;
+}
